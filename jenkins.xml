@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    stages {
+        stage('clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/karthikkokkula/maven-web-app-youtuber.git'
+            }
+        }
+        stages ('build') {
+            sh ''' mvn package ''''
+        }
+        stage('build a docker file') {
+            steps {
+                sh 'docker build -t tomorrowfile .'
+            }
+        }
+        stage('push to docker hub') {
+            steps {
+                script {
+                    // Tag the Docker image
+                    sh 'docker tag tomorrow karthikkokkula/tomorrow:02'
+                    
+                    // Push the Docker image to Docker Hub with specified credentials
+                    withDockerRegistry(credentialsId: 'c7722ae6-b4fe-4000-8a64-72845c39c064') {
+                        sh 'docker push karthikkokkula/tomorrow:02'
+                    }
+                }
+            }
+        }
+        stage('deploy the image to container') {
+            steps {
+                sh '''
+                docker pull karthikkokkula/tomorrow:02
+                docker run --name dockermvn -d -p 9999:8080 karthikkokkula/tomorrow:02
+                '''
+            }
+        }
+    }
+}

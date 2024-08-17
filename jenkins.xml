@@ -18,11 +18,11 @@ pipeline {
             steps {
                 script {
                     // Tag the Docker image
-                    sh 'docker tag tomorrow karthikkokkula/tomorrow:02'
+                    sh 'docker tag tomorrowfile karthikkokkula/tomorrowfile:02'
                     
                     // Push the Docker image to Docker Hub with specified credentials
                     withDockerRegistry(credentialsId: 'c7722ae6-b4fe-4000-8a64-72845c39c064') {
-                        sh 'docker push karthikkokkula/tomorrow:02'
+                        sh 'docker push karthikkokkula/tomorrowfile:02'
                     }
                 }
             }
@@ -30,8 +30,8 @@ pipeline {
         stage('deploy the image to container') {
             steps {
                 sh '''
-                docker pull karthikkokkula/tomorrow:02
-                docker run --name dockermvn -d -p 9999:8080 karthikkokkula/tomorrow:02
+                docker pull karthikkokkula/tomorrowfile:02
+                docker run --name dockermvn -d -p 9999:8080 karthikkokkula/tomorrowfile:02
                 '''
             }
         }
